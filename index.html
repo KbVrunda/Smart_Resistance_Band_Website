@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Force Display</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      height: 100vh;
+      align-items: center;
+      justify-content: center;
+      background-color: #f3f4f6;
+    }
+
+    .container {
+      text-align: center;
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .force {
+      font-size: 48px;
+      color: #10b981;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Live Force Reading</h1>
+    <div id="forceLabel" class="force">Waiting for data...</div>
+  </div>
+
+  <script>
+    const forceLabel = document.getElementById("forceLabel");
+    const ws = new WebSocket("ws://localhost:8765");
+
+    ws.onmessage = (event) => {
+      forceLabel.textContent = event.data;
+    };
+
+    ws.onerror = (err) => {
+      console.error("WebSocket error", err);
+      forceLabel.textContent = "Error connecting to server";
+    };
+
+    ws.onclose = () => {
+      forceLabel.textContent = "Connection closed";
+    };
+  </script>
+</body>
+</html>
