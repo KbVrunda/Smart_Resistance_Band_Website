@@ -3,13 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <title>Force Display</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
       display: flex;
-      height: 100vh;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
+      height: 100vh;
       background-color: #f3f4f6;
     }
 
@@ -19,12 +21,20 @@
       padding: 40px;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      margin-bottom: 30px;
     }
 
     .force {
       font-size: 48px;
       color: #10b981;
       margin-top: 20px;
+    }
+
+    canvas {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      padding: 20px;
     }
   </style>
 </head>
@@ -34,12 +44,61 @@
     <div id="forceLabel" class="force">Waiting for data...</div>
   </div>
 
+  <canvas id="forceChart" width="200" height="50"></canvas>
+
   <script>
     const forceLabel = document.getElementById("forceLabel");
+    const ctx = document.getElementById("forceChart").getContext("2d");
+
+    const MAX_POINTS = 100; // Approx 10 seconds worth of data (assuming ~100ms updates)
+    const forceData = [];
+
+    const chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'Force (N)',
+          data: [],
+          borderColor: '#10b981',
+          tension: 0.3,
+          fill: false
+        }]
+      },
+      options: {
+        animation: false,
+        scales: {
+          x: { display: false },
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Force'
+            }
+          }
+        }
+      }
+    });
+
     const ws = new WebSocket("ws://localhost:8765");
 
     ws.onmessage = (event) => {
-      forceLabel.textContent = event.data;
+      const value = parseFloat(event.data);
+      if (!isNaN(value)) {
+        const now = new Date().toLocaleTimeString();
+
+        forceLabel.textContent = value.toFixed(3);
+
+        chart.data.labels.push(now);
+        chart.data.datasets[0].data.push(value);
+
+        if (chart.data.labels.length > MAX_POINTS) {
+          chart.data.labels.shift();
+          chart.data.datasets[0].data.shift();
+        }
+
+        chart.update();
+      }
     };
 
     ws.onerror = (err) => {
