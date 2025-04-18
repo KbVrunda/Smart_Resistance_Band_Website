@@ -2,8 +2,14 @@ import asyncio
 import websockets
 import serial
 
+# ls /dev/tty.usb*
+# terminal line to find port
+
+# run server 
+# python '/Users/vrundapatel/Desktop/BME 261L/python_server.py'
+
 # ----- SETUP -----
-SERIAL_PORT = '/dev/tty.usbmodem111301' # Adjust to match your system
+SERIAL_PORT = '//dev/tty.usbmodem11301' # Adjust to match your system
 BAUD_RATE = 9600
 ser = serial.Serial(SERIAL_PORT, BAUD_RATE)
 
