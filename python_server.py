@@ -2,10 +2,14 @@ import asyncio
 import websockets
 import serial
 
-# ls /dev/tty.usb*
 # terminal line to find port
+# for Mac: 
+# ls /dev/tty.usb*
 
-# run server 
+# For windows: 
+# Get-WmiObject Win32_SerialPort
+
+# run server. Edit with your own path 
 # python '/Users/vrundapatel/Desktop/BME 261L/python_server.py'
 
 # ----- SETUP -----
